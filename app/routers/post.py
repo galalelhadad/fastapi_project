@@ -42,11 +42,11 @@ def get_one_post(id:int,db:Session =Depends(get_db),current_user=Depends(outh2.g
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"post with {id} not found in database")
-    if post.owner_id != current_user.id:
+    if post.Post.owner_id != current_user.id:
              raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail=f"not allwoed request")
     
     
-    return post
+    return post.Post
 
 @router.post("/",status_code=status.HTTP_201_CREATED)
 def create_post(post:schemas.CreatePost,db:Session =Depends(get_db),current_user=Depends(outh2.get_current_user)):
@@ -80,12 +80,12 @@ def update_post(post:schemas.CreatePost,id:int,db:Session=Depends(get_db),curren
     if Post is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                                 detail=f"post with {id} not found in database")
-    if post.owner_id != current_user.id:
+    if Post.owner_id != current_user.id:
              raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,detail=f"not allwoed request")
     
     post_query.update(post.dict(),synchronize_session=False)
     db.commit()
-    return {"message":post_query.first()}
+    return post_query.first()
 
 
 
